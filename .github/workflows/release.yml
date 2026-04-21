@@ -1,0 +1,154 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Semver bump type
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      version:
+        description: Explicit version (overrides bump when set, e.g. 1.2.3)
+        required: false
+        type: string
+  schedule:
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Regenerate spec artifacts
+        run: bun run generate
+
+      - name: Detect drift (schedule path)
+        if: ${{ github.event_name == 'schedule' }}
+        id: drift
+        run: |
+          if git diff --quiet -- src/generated; then
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+            SHORT_HASH=$(grep -oE '"[0-9a-f]{64}"' src/generated/version.ts | head -n1 | tr -d '"' | cut -c1-12)
+            echo "short_hash=$SHORT_HASH" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stop if no drift (schedule path)
+        if: ${{ github.event_name == 'schedule' && steps.drift.outputs.drift == 'false' }}
+        run: |
+          echo "No upstream spec drift detected. Exiting."
+          exit 0
+
+      - name: Configure git identity
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.drift.outputs.drift == 'true' }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.drift.outputs.drift == 'true' }}
+        id: bump
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            NEW_VERSION="${{ github.event.inputs.version }}"
+            npm version "$NEW_VERSION" --no-git-tag-version --allow-same-version
+          else
+            if [ "${{ github.event_name }}" = "schedule" ]; then
+              BUMP="patch"
+            else
+              BUMP="${{ github.event.inputs.bump }}"
+            fi
+            NEW_VERSION=$(npm version "$BUMP" --no-git-tag-version | sed 's/^v//')
+          fi
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "branch=release/v$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create release branch + commit
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.drift.outputs.drift == 'true' }}
+        run: |
+          BRANCH="${{ steps.bump.outputs.branch }}"
+          VERSION="${{ steps.bump.outputs.version }}"
+          git checkout -b "$BRANCH"
+          git add -A
+
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            MSG="chore(release): v$VERSION — sync spec ${{ steps.drift.outputs.short_hash }}"
+          else
+            MSG="chore(release): v$VERSION"
+          fi
+
+          git commit -m "$MSG"
+          git push origin "$BRANCH"
+
+      - name: Open PRs to develop and main
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.drift.outputs.drift == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ steps.bump.outputs.branch }}"
+          VERSION="${{ steps.bump.outputs.version }}"
+          TRIGGER="${{ github.event_name }}"
+
+          if [ "$TRIGGER" = "schedule" ]; then
+            BODY=$(cat <<EOF
+          Automated release triggered by upstream spec drift (reearth-cms \`integration.yml\`).
+
+          - **Version:** v$VERSION
+          - **New spec hash:** \`${{ steps.drift.outputs.short_hash }}\`
+          - **Bump:** patch (adjust manually if this is a breaking change)
+
+          Merge both PRs (order doesn't matter) to land the version bump on \`develop\` and \`main\` in sync.
+          The \`main\` merge auto-creates tag \`v$VERSION\`, which triggers NPM publish + docs deploy.
+          EOF
+          )
+            LABELS="release,auto-generated,spec-drift"
+          else
+            BODY=$(cat <<EOF
+          Automated release triggered by manual dispatch.
+
+          - **Version:** v$VERSION
+          - **Bump:** ${{ github.event.inputs.bump }}${{ github.event.inputs.version && format(' (explicit {0})', github.event.inputs.version) || '' }}
+
+          Merge both PRs (order doesn't matter) to land the version bump on \`develop\` and \`main\` in sync.
+          The \`main\` merge auto-creates tag \`v$VERSION\`, which triggers NPM publish + docs deploy.
+          EOF
+          )
+            LABELS="release"
+          fi
+
+          gh pr create \
+            --base develop \
+            --head "$BRANCH" \
+            --title "chore(release): v$VERSION → develop" \
+            --body "$BODY" \
+            --label "$LABELS"
+
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore(release): v$VERSION → main" \
+            --body "$BODY" \
+            --label "$LABELS"
