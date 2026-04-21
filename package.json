@@ -2,7 +2,7 @@
   "name": "@reearth/cms-integration-interface",
   "version": "0.0.0",
   "license": "Apache-2.0",
-  "description": "TypeScript types for the reearth-cms Integration REST API, generated from the OpenAPI spec.",
+  "description": "Typed fetch utilities and generated types for the reearth-cms Integration REST API.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,19 +14,23 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "exports"
   ],
   "packageManager": "yarn@1.22.22",
   "engines": {
     "node": ">=20.11.0"
   },
   "scripts": {
-    "generate": "tsx scripts/generate.ts && prettier --write src/generated",
+    "generate": "tsx scripts/generate.ts && prettier --write src/generated exports",
     "build": "tsc",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit && tsc --noEmit -p playground/tsconfig.json",
+    "playground": "bun playground/example.ts",
+    "playground:js": "bun playground/example.mjs",
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "openapi-to-postmanv2": "^6.0.1",
     "openapi-typescript": "7.4.4",
     "prettier": "3.3.3",
     "tsx": "4.19.2",

@@ -1,9 +1,8 @@
 /**
+ * Runtime map of every operationId to its HTTP method and path template.
+ *
  * AUTO-GENERATED from https://raw.githubusercontent.com/reearth/reearth-cms/main/server/schemas/integration/integration.yml.
  * Do not edit by hand. Run `bun run generate` to refresh.
- *
- * Runtime map of every operationId to its HTTP method and path template.
- * Used by buildRequest() and createClient() to dispatch requests.
  */
 /* eslint-disable */
 export const operationsMap = {

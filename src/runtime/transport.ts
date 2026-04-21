@@ -13,7 +13,9 @@ export class HttpError extends Error {
     body: unknown,
     descriptor: RequestDescriptor,
   ) {
-    super(`HTTP ${status} ${statusText} — ${descriptor.method} ${descriptor.path}`);
+    super(
+      `HTTP ${status} ${statusText} — ${descriptor.method} ${descriptor.path}`,
+    );
     this.name = "HttpError";
     this.status = status;
     this.statusText = statusText;
@@ -29,7 +31,10 @@ function joinUrl(baseUrl: string, path: string): string {
 }
 
 async function parseBody(response: Response): Promise<unknown> {
-  if (response.status === 204 || response.headers.get("content-length") === "0") {
+  if (
+    response.status === 204 ||
+    response.headers.get("content-length") === "0"
+  ) {
     return undefined;
   }
   const contentType = response.headers.get("content-type") ?? "";
@@ -57,7 +62,12 @@ export const fetchTransport: Transport = async <T>(ctx: TransportContext) => {
 
   const payload = await parseBody(response);
   if (!response.ok) {
-    throw new HttpError(response.status, response.statusText, payload, descriptor);
+    throw new HttpError(
+      response.status,
+      response.statusText,
+      payload,
+      descriptor,
+    );
   }
   return payload as T;
 };

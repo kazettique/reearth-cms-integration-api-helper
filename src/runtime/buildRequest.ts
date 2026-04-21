@@ -1,10 +1,6 @@
 import { operationsMap } from "../generated/operations";
 
-import type {
-  OperationId,
-  OperationParams,
-  RequestDescriptor,
-} from "./types";
+import type { OperationId, OperationParams, RequestDescriptor } from "./types";
 
 type RawParams = {
   path?: Record<string, unknown>;
@@ -46,15 +42,18 @@ export function buildRequest<Op extends OperationId>(
   const headerParams = raw.header ?? {};
   const body = raw.body;
 
-  const resolvedPath = meta.path.replace(/\{([^}]+)\}/g, (_match, key: string) => {
-    const value = pathParams[key];
-    if (value === undefined || value === null) {
-      throw new Error(
-        `Missing path parameter "${key}" for operation "${String(operationId)}"`,
-      );
-    }
-    return encodeURIComponent(String(value));
-  });
+  const resolvedPath = meta.path.replace(
+    /\{([^}]+)\}/g,
+    (_match, key: string) => {
+      const value = pathParams[key];
+      if (value === undefined || value === null) {
+        throw new Error(
+          `Missing path parameter "${key}" for operation "${String(operationId)}"`,
+        );
+      }
+      return encodeURIComponent(String(value));
+    },
+  );
 
   const search = new URLSearchParams();
   for (const [k, v] of Object.entries(queryParams)) {

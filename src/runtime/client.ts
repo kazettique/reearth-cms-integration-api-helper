@@ -8,6 +8,7 @@ import type {
   OperationParams,
   OperationResult,
 } from "./types";
+import { runVersionCheckOnce } from "./version";
 
 type CallOptions = { signal?: AbortSignal };
 
@@ -37,6 +38,11 @@ export type Client = {
  */
 export function createClient(options: ClientOptions): Client {
   const transport = options.transport ?? fetchTransport;
+
+  if (!options.skipVersionCheck) {
+    // Fire-and-forget: one HEAD per process, never blocks real requests.
+    void runVersionCheckOnce();
+  }
 
   const invoke = async <Op extends OperationId>(
     op: Op,

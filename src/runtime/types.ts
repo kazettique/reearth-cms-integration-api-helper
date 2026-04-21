@@ -9,24 +9,29 @@ type ParamsOf<Op extends OperationId> = operations[Op] extends {
   ? P
   : never;
 
-type JsonBodyOf<Op extends OperationId> =
-  operations[Op] extends { requestBody: { content: { "application/json": infer B } } }
-    ? { body: B }
-    : operations[Op] extends { requestBody?: { content: { "application/json": infer B } } }
-      ? { body?: B }
-      : { body?: never };
+type JsonBodyOf<Op extends OperationId> = operations[Op] extends {
+  requestBody: { content: { "application/json": infer B } };
+}
+  ? { body: B }
+  : operations[Op] extends {
+        requestBody?: { content: { "application/json": infer B } };
+      }
+    ? { body?: B }
+    : { body?: never };
 
-type PickDefined<T, K extends PropertyKey> = T extends Record<K, infer V>
-  ? [V] extends [never]
-    ? object
-    : { [P in K]: V }
-  : object;
+type PickDefined<T, K extends PropertyKey> =
+  T extends Record<K, infer V>
+    ? [V] extends [never]
+      ? object
+      : { [P in K]: V }
+    : object;
 
-type PickOptional<T, K extends PropertyKey> = T extends Partial<Record<K, infer V>>
-  ? [V] extends [never]
-    ? object
-    : { [P in K]?: V }
-  : object;
+type PickOptional<T, K extends PropertyKey> =
+  T extends Partial<Record<K, infer V>>
+    ? [V] extends [never]
+      ? object
+      : { [P in K]?: V }
+    : object;
 
 /**
  * Typed parameters for a given operation.
@@ -99,4 +104,10 @@ export interface ClientOptions {
   headers?: Record<string, string>;
   /** Custom transport. Defaults to a native-fetch implementation. */
   transport?: Transport;
+  /**
+   * Skip the best-effort spec version check that runs once per process on
+   * first `createClient()`. Set to `true` in tests, air-gapped builds, or
+   * anywhere you don't want a background HEAD request to the spec URL.
+   */
+  skipVersionCheck?: boolean;
 }

@@ -1,4 +1,6 @@
 /**
+ * OpenAPI types.
+ *
  * AUTO-GENERATED from https://raw.githubusercontent.com/reearth/reearth-cms/main/server/schemas/integration/integration.yml.
  * Do not edit by hand. Run `bun run generate` to refresh.
  */
