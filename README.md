@@ -16,6 +16,17 @@ in the reearth-cms repo.
      operationId (e.g. `client.ItemCreate(...)`). Uses native fetch by
      default, accepts a pluggable `transport`.
 
+## Documentation site
+
+A VitePress site with English + 日本語 localization lives in [`docs/`](./docs/).
+Run it locally:
+
+```sh
+bun run docs          # dev server
+bun run docs:build    # static build → docs/.vitepress/dist/
+bun run docs:preview  # preview the static build
+```
+
 ## Install
 
 ```sh

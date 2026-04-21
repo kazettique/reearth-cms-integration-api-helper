@@ -27,6 +27,9 @@
     "type-check": "tsc --noEmit && tsc --noEmit -p playground/tsconfig.json",
     "playground": "bun playground/example.ts",
     "playground:js": "bun playground/example.mjs",
+    "docs": "cd docs && bun run dev",
+    "docs:build": "cd docs && bun run build",
+    "docs:preview": "cd docs && bun run preview",
     "format": "prettier --write ."
   },
   "devDependencies": {
