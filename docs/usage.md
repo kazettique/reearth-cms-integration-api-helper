@@ -10,7 +10,7 @@ The package ships two layers on top of the generated types:
 ## Typed client
 
 ```ts
-import { createClient } from "@reearth/cms-integration-interface";
+import { createClient } from "reearth-cms-integration-api-helper";
 
 const cms = createClient({
   baseUrl: "https://cms.example.com/api",
@@ -45,7 +45,7 @@ ergonomics while letting your existing stack handle retries, interceptors, etc.
 
 ```ts
 import axios from "axios";
-import { createClient, type Transport } from "@reearth/cms-integration-interface";
+import { createClient, type Transport } from "reearth-cms-integration-api-helper";
 
 const axiosTransport: Transport = async ({ baseUrl, descriptor, signal }) => {
   const { data } = await axios.request({
@@ -70,7 +70,7 @@ package README — they're three-to-five lines each.
 When you just want the URL and method without any client abstraction:
 
 ```ts
-import { buildRequest } from "@reearth/cms-integration-interface";
+import { buildRequest } from "reearth-cms-integration-api-helper";
 
 const req = buildRequest("ItemCreate", {
   path: { workspaceIdOrAlias: "ws", projectIdOrAlias: "p", modelIdOrKey: "m" },
@@ -93,7 +93,7 @@ and your editor will type-check against the shipped `.d.ts`:
 
 ```js
 // @ts-check
-import { createClient } from "@reearth/cms-integration-interface";
+import { createClient } from "reearth-cms-integration-api-helper";
 
 const cms = createClient({
   baseUrl: "https://cms.example.com/api",

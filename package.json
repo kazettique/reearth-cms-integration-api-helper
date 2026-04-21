@@ -1,5 +1,5 @@
 {
-  "name": "@reearth/reearth-cms-integration-api-helper",
+  "name": "reearth-cms-integration-api-helper",
   "version": "0.0.0",
   "license": "Apache-2.0",
   "description": "Typed fetch utilities and generated types for the reearth-cms Integration REST API.",
@@ -14,14 +14,25 @@
   },
   "files": [
     "dist",
-    "src",
-    "exports"
+    "src"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kazettique/reearth-cms-integration-api-helper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kazettique/reearth-cms-integration-api-helper/issues"
+  },
+  "homepage": "https://kazettique.github.io/reearth-cms-integration-api-helper/",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "engines": {
     "node": ">=20.11.0"
   },
   "scripts": {
-    "generate": "tsx scripts/generate.ts && prettier --write src/generated exports",
+    "generate": "tsx scripts/generate.ts && prettier --write src/generated docs/public/integration.postman_collection.json",
     "build": "tsc",
     "type-check": "tsc --noEmit && tsc --noEmit -p playground/tsconfig.json",
     "playground": "bun playground/example.ts",

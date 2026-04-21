@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: cms-integration-interface
+  name: reearth-cms-integration-api-helper
   text: 型付き fetch ユーティリティ
   tagline: reearth-cms Integration REST API 用。OpenAPI 仕様から自動生成され、HTTP ライブラリに依存せず、すぐに使えます。
   actions:

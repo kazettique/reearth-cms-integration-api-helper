@@ -17,7 +17,7 @@ const OPS_OUT = resolve(__dirname, "../src/generated/operations.ts");
 const VERSION_OUT = resolve(__dirname, "../src/generated/version.ts");
 const POSTMAN_OUT = resolve(
   __dirname,
-  "../exports/integration.postman_collection.json",
+  "../docs/public/integration.postman_collection.json",
 );
 
 // 1. Fetch the spec + hash it locally for version-drift detection.

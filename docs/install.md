@@ -5,15 +5,15 @@
 ::: code-group
 
 ```sh [bun]
-bun add @reearth/cms-integration-interface
+bun add reearth-cms-integration-api-helper
 ```
 
 ```sh [yarn]
-yarn add @reearth/cms-integration-interface
+yarn add reearth-cms-integration-api-helper
 ```
 
 ```sh [npm]
-npm install @reearth/cms-integration-interface
+npm install reearth-cms-integration-api-helper
 ```
 
 :::
@@ -28,7 +28,7 @@ For browser / prototype use, import straight from [esm.sh](https://esm.sh):
 
 ```html
 <script type="module">
-  import { createClient } from "https://esm.sh/@reearth/cms-integration-interface";
+  import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper";
 
   const cms = createClient({
     baseUrl: "https://cms.example.com/api",
@@ -45,7 +45,7 @@ For browser / prototype use, import straight from [esm.sh](https://esm.sh):
 To pin to a specific version:
 
 ```js
-import { createClient } from "https://esm.sh/@reearth/cms-integration-interface@0.1.0";
+import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper@0.1.0";
 ```
 
 ::: info Not published yet

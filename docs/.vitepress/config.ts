@@ -1,9 +1,10 @@
 import { defineConfig } from "vitepress";
 
 export default defineConfig({
-  title: "cms-integration-interface",
+  title: "reearth-cms-integration-api-helper",
   description:
     "Typed fetch utilities for the reearth-cms Integration REST API",
+  base: "/reearth-cms-integration-api-helper/",
   cleanUrls: true,
   lastUpdated: true,
 
@@ -60,7 +61,11 @@ export default defineConfig({
   },
 
   themeConfig: {
-    // socialLinks will be filled in once the GitHub remote exists:
-    // socialLinks: [{ icon: "github", link: "https://github.com/.../cms-integration-interface" }],
+    socialLinks: [
+      {
+        icon: "github",
+        link: "https://github.com/kazettique/reearth-cms-integration-api-helper",
+      },
+    ],
   },
 });

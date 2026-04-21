@@ -1,12 +1,9 @@
 {
-  "name": "@reearth/reearth-cms-integration-api-helper-docs",
+  "name": "reearth-cms-integration-api-helper-docs",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "predev": "mkdir -p public && cp ../exports/integration.postman_collection.json public/",
-    "prebuild": "mkdir -p public && cp ../exports/integration.postman_collection.json public/",
-    "prepreview": "mkdir -p public && cp ../exports/integration.postman_collection.json public/",
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview"

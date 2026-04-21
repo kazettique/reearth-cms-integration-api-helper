@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: cms-integration-interface
+  name: reearth-cms-integration-api-helper
   text: Typed fetch utilities
   tagline: For the reearth-cms Integration REST API — auto-generated from the OpenAPI spec, transport-agnostic, ready to import.
   actions:

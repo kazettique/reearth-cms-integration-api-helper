@@ -64,11 +64,11 @@ export function runVersionCheckOnce(): Promise<SpecVersionResult> {
     const result = await checkSpecVersion();
     if (!result.isLatest && result.remote) {
       const lines = [
-        "[@reearth/cms-integration-interface] Integration API spec may be out of date.",
+        "[reearth-cms-integration-api-helper] Integration API spec may be out of date.",
         `  local  sha256: ${result.local}`,
         `  remote sha256: ${result.remote}`,
         `  source:        ${result.specUrl}`,
-        "  Run `bun run generate` in @reearth/cms-integration-interface to refresh the generated types.",
+        "  Run `bun run generate` in reearth-cms-integration-api-helper to refresh the generated types.",
       ];
       console.warn(lines.join("\n"));
     }

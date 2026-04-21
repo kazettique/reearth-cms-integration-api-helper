@@ -1,4 +1,4 @@
-# @reearth/cms-integration-interface
+# reearth-cms-integration-api-helper
 
 TypeScript types **and** transport-agnostic fetch utilities for the
 **reearth-cms Integration REST API**. Both are auto-generated from
@@ -30,17 +30,17 @@ bun run docs:preview  # preview the static build
 ## Install
 
 ```sh
-bun add @reearth/cms-integration-interface
+bun add reearth-cms-integration-api-helper
 # or
-yarn add @reearth/cms-integration-interface
+yarn add reearth-cms-integration-api-helper
 # or
-npm install @reearth/cms-integration-interface
+npm install reearth-cms-integration-api-helper
 ```
 
 ## Quick start — typed client with default fetch
 
 ```ts
-import { createClient } from "@reearth/cms-integration-interface";
+import { createClient } from "reearth-cms-integration-api-helper";
 
 const cms = createClient({
   baseUrl: "https://cms.example.com/api",
@@ -72,7 +72,7 @@ list (48 operations).
 It performs no I/O, so you can hand it to any HTTP library.
 
 ```ts
-import { buildRequest } from "@reearth/cms-integration-interface";
+import { buildRequest } from "reearth-cms-integration-api-helper";
 
 const req = buildRequest("ItemCreate", {
   path: { workspaceIdOrAlias: "ws", projectIdOrAlias: "p", modelIdOrKey: "m" },
@@ -99,7 +99,7 @@ import axios from "axios";
 import {
   createClient,
   type Transport,
-} from "@reearth/cms-integration-interface";
+} from "reearth-cms-integration-api-helper";
 
 const axiosTransport: Transport = async ({ baseUrl, descriptor, signal }) => {
   const { data } = await axios.request({
@@ -123,7 +123,7 @@ import { ofetch } from "ofetch";
 import {
   createClient,
   type Transport,
-} from "@reearth/cms-integration-interface";
+} from "reearth-cms-integration-api-helper";
 
 const ofetchTransport: Transport = ({ baseUrl, descriptor, signal }) =>
   ofetch(descriptor.url, {
@@ -144,7 +144,7 @@ import ky from "ky";
 import {
   createClient,
   type Transport,
-} from "@reearth/cms-integration-interface";
+} from "reearth-cms-integration-api-helper";
 
 const kyTransport: Transport = ({ baseUrl, descriptor, signal }) =>
   ky(descriptor.url.replace(/^\//, ""), {
@@ -167,7 +167,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   buildRequest,
   fetchTransport,
-} from "@reearth/cms-integration-interface";
+} from "reearth-cms-integration-api-helper";
 
 function useProjects(workspaceIdOrAlias: string) {
   return useQuery({
@@ -193,7 +193,7 @@ Or plug axios / ofetch into the `queryFn` the same way.
 The default transport throws `HttpError` for non-2xx responses:
 
 ```ts
-import { HttpError } from "@reearth/cms-integration-interface";
+import { HttpError } from "reearth-cms-integration-api-helper";
 
 try {
   await cms.ProjectGet({
@@ -218,7 +218,7 @@ hover docs and types as TypeScript consumers. No TypeScript required:
 ```js
 // example.mjs
 // @ts-check  ← opt into editor type-checking
-import { buildRequest, createClient } from "@reearth/cms-integration-interface";
+import { buildRequest, createClient } from "reearth-cms-integration-api-helper";
 
 const cms = createClient({
   baseUrl: "https://cms.example.com/api",
@@ -263,11 +263,11 @@ best-effort HEAD-then-GET against the spec URL, hashes the response, and
 warns **once per process** on mismatch:
 
 ```
-[@reearth/cms-integration-interface] Integration API spec may be out of date.
+[reearth-cms-integration-api-helper] Integration API spec may be out of date.
   local  sha256: d9ad15577e5a...
   remote sha256: 3e2b8f01aa4c...
   source:        https://raw.githubusercontent.com/reearth/reearth-cms/main/server/schemas/integration/integration.yml
-  Run `bun run generate` in @reearth/cms-integration-interface to refresh the generated types.
+  Run `bun run generate` in reearth-cms-integration-api-helper to refresh the generated types.
 ```
 
 Opt out for tests / air-gapped builds:
@@ -283,7 +283,7 @@ import {
   checkSpecVersion,
   SPEC_CONTENT_HASH,
   GENERATED_AT,
-} from "@reearth/cms-integration-interface";
+} from "reearth-cms-integration-api-helper";
 
 const { local, remote, isLatest } = await checkSpecVersion();
 if (!isLatest) console.warn("Types are behind main:", { local, remote });
@@ -351,7 +351,7 @@ import type {
   PathParams,
   QueryParams,
   HeaderParams, // <Op> -> param types
-} from "@reearth/cms-integration-interface";
+} from "reearth-cms-integration-api-helper";
 
 // Runtime
 import {
@@ -365,7 +365,7 @@ import {
   SPEC_URL,
   SPEC_CONTENT_HASH,
   GENERATED_AT,
-} from "@reearth/cms-integration-interface";
+} from "reearth-cms-integration-api-helper";
 import type {
   Client,
   ClientOptions,
@@ -376,7 +376,7 @@ import type {
   OperationParams,
   OperationResult,
   SpecVersionResult,
-} from "@reearth/cms-integration-interface";
+} from "reearth-cms-integration-api-helper";
 ```
 
 ## Source of truth
