@@ -1,22 +1,28 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 
 import openapiTS, { astToString } from "openapi-typescript";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const SPEC = resolve(
-  __dirname,
-  "../../reearth-cms-3/server/schemas/integration/integration.yml",
+const SPEC_URL = new URL(
+  "https://raw.githubusercontent.com/reearth/reearth-cms/main/server/schemas/integration/integration.yml",
 );
 const OUT = resolve(__dirname, "../src/generated/schema.ts");
 
-const ast = await openapiTS(pathToFileURL(SPEC));
+const probe = await fetch(SPEC_URL, { method: "HEAD" });
+if (!probe.ok) {
+  throw new Error(
+    `Failed to fetch OpenAPI spec at ${SPEC_URL}: HTTP ${probe.status} ${probe.statusText}`,
+  );
+}
+
+const ast = await openapiTS(SPEC_URL);
 const body = astToString(ast);
 
 const header = `/**
- * AUTO-GENERATED from reearth-cms-3/server/schemas/integration/integration.yml.
+ * AUTO-GENERATED from ${SPEC_URL}.
  * Do not edit by hand. Run \`yarn generate\` to refresh.
  */
 /* eslint-disable */

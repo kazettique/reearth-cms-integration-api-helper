@@ -1,5 +1,5 @@
 /**
- * AUTO-GENERATED from reearth-cms-3/server/schemas/integration/integration.yml.
+ * AUTO-GENERATED from https://raw.githubusercontent.com/reearth/reearth-cms/main/server/schemas/integration/integration.yml.
  * Do not edit by hand. Run `yarn generate` to refresh.
  */
 /* eslint-disable */
