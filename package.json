@@ -1,0 +1,35 @@
+{
+  "name": "@reearth/cms-integration-interface",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "description": "TypeScript types for the reearth-cms Integration REST API, generated from the OpenAPI spec.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "scripts": {
+    "generate": "tsx scripts/generate.ts && prettier --write src/generated",
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.4.4",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
