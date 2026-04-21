@@ -1,6 +1,8 @@
 import type { components, operations } from "./generated/schema";
 
 export type { paths, components, operations } from "./generated/schema";
+export { operationsMap } from "./generated/operations";
+export type { OperationsMap } from "./generated/operations";
 
 /** The full `components.schemas` map from the OpenAPI spec. */
 export type Schemas = components["schemas"];
@@ -30,9 +32,6 @@ export type ValueType = Schemas["valueType"];
 export type Version = Schemas["version"];
 export type VersionedItem = Schemas["versionedItem"];
 
-/** Names of every operation defined in the spec (`operationId` values). */
-export type OperationId = keyof operations;
-
 type JsonContent<T> = T extends { content: { "application/json": infer B } }
   ? B
   : never;
@@ -40,11 +39,8 @@ type JsonContent<T> = T extends { content: { "application/json": infer B } }
 /**
  * The JSON request body for a given `operationId`.
  * Resolves to `never` for operations without a JSON body.
- *
- * @example
- * type CreateProjectBody = RequestBody<"ProjectCreate">;
  */
-export type RequestBody<Op extends OperationId> =
+export type RequestBody<Op extends keyof operations> =
   operations[Op] extends { requestBody?: infer R }
     ? R extends { content: { "application/json": infer B } }
       ? B
@@ -54,11 +50,8 @@ export type RequestBody<Op extends OperationId> =
 /**
  * The 200-response JSON body for a given `operationId`.
  * Resolves to `never` for operations without a JSON 200 response.
- *
- * @example
- * type ListProjectsResponse = ResponseBody<"ProjectFilter">;
  */
-export type ResponseBody<Op extends OperationId> =
+export type ResponseBody<Op extends keyof operations> =
   operations[Op] extends { responses: infer R }
     ? R extends { 200: infer Ok }
       ? JsonContent<Ok>
@@ -66,13 +59,28 @@ export type ResponseBody<Op extends OperationId> =
     : never;
 
 /** Path parameters for a given `operationId`. */
-export type PathParams<Op extends OperationId> =
+export type PathParams<Op extends keyof operations> =
   operations[Op] extends { parameters: { path: infer P } } ? P : never;
 
 /** Query parameters for a given `operationId`. */
-export type QueryParams<Op extends OperationId> =
+export type QueryParams<Op extends keyof operations> =
   operations[Op] extends { parameters: { query: infer Q } } ? Q : never;
 
 /** Header parameters for a given `operationId`. */
-export type HeaderParams<Op extends OperationId> =
+export type HeaderParams<Op extends keyof operations> =
   operations[Op] extends { parameters: { header: infer H } } ? H : never;
+
+// --- Runtime: transport-agnostic request builders + pluggable client -------
+
+export { buildRequest } from "./runtime/buildRequest";
+export { createClient, type Client } from "./runtime/client";
+export { fetchTransport, HttpError } from "./runtime/transport";
+export type {
+  ClientOptions,
+  OperationId,
+  OperationParams,
+  OperationResult,
+  RequestDescriptor,
+  Transport,
+  TransportContext,
+} from "./runtime/types";
