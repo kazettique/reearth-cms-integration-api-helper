@@ -20,12 +20,12 @@ single-file `.d.ts` bundle that this site hosts at a stable URL.
 
 ## Where the `.d.ts` lives
 
-| Purpose | URL |
-|---|---|
-| Latest (tracks `main`) | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/reearth-cms-integration-api-helper.d.ts` |
+| Purpose                                                  | URL                                                                                                                    |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Latest (tracks `main`)                                   | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/reearth-cms-integration-api-helper.d.ts`        |
 | Current release (pinned to the latest published version) | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/reearth-cms-integration-api-helper-vX.Y.Z.d.ts` |
-| Any historical version (via unpkg) | `https://unpkg.com/reearth-cms-integration-api-helper@X.Y.Z/dist/bundled.d.ts` |
-| Manifest (version metadata) | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/manifest.json` |
+| Any historical version (via unpkg)                       | `https://unpkg.com/reearth-cms-integration-api-helper@X.Y.Z/dist/bundled.d.ts`                                         |
+| Manifest (version metadata)                              | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/manifest.json`                                  |
 
 For long-term version pinning, prefer the **unpkg** URL — it mirrors every
 published version automatically. The GH Pages versioned URL is replaced on

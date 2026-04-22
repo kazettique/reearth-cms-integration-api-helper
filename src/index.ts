@@ -1,6 +1,7 @@
 import type { components, operations } from "./generated/schema";
 
 export type { paths, components, operations } from "./generated/schema";
+export type { ClientMethods } from "./generated/client";
 export { operationsMap } from "./generated/operations";
 export type { OperationsMap } from "./generated/operations";
 
@@ -99,6 +100,7 @@ export type {
   OperationId,
   OperationParams,
   OperationResult,
+  Prettify,
   RequestDescriptor,
   Transport,
   TransportContext,

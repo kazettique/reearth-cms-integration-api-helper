@@ -1,5 +1,11 @@
 import type { operations } from "../generated/schema";
 
+/**
+ * Flatten an intersection into a single object literal so editors render the
+ * concrete shape on hover instead of the aliased intersection.
+ */
+export type Prettify<T> = { [K in keyof T]: T[K] } & {};
+
 /** Every operationId defined in the OpenAPI spec. */
 export type OperationId = keyof operations;
 

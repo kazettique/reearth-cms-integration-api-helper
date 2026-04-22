@@ -1,3 +1,4 @@
+import type { ClientMethods } from "../generated/client";
 import { operationsMap } from "../generated/operations";
 
 import { buildRequest } from "./buildRequest";
@@ -15,6 +16,10 @@ type CallOptions = { signal?: AbortSignal };
 /**
  * Fully-typed client surface: one method per operationId.
  *
+ * Each method is declared explicitly in the generated `ClientMethods`
+ * interface so editors can land on a specific line when the user hits
+ * "Go to Definition" on e.g. `client.ProjectGet`.
+ *
  * @example
  * const client = createClient({ baseUrl, token });
  * const item = await client.ItemCreate({
@@ -22,12 +27,7 @@ type CallOptions = { signal?: AbortSignal };
  *   body: { fields: [...] },
  * });
  */
-export type Client = {
-  [Op in OperationId]: (
-    params: OperationParams<Op>,
-    options?: CallOptions,
-  ) => Promise<OperationResult<Op>>;
-};
+export type Client = ClientMethods;
 
 /**
  * Build a typed client for the reearth-cms integration API.
@@ -76,5 +76,5 @@ export function createClient(options: ClientOptions): Client {
     client[op] = (params: OperationParams<OperationId>, call?: CallOptions) =>
       invoke(op, params, call);
   }
-  return client as Client;
+  return client as unknown as Client;
 }

@@ -37,6 +37,13 @@ const created = await cms.ItemCreate({
 Every `operationId` in the OpenAPI spec is a method on the client (48 in
 total). Your editor's autocomplete will list them when you type `cms.`.
 
+Each method is declared explicitly in the generated `ClientMethods`
+interface, so hovering (e.g.) `cms.ItemCreate` shows the HTTP method and
+path in a JSDoc comment, and pressing **F12 / Go to Definition** lands on
+that specific method. The JSDoc also renders a clickable
+`@see operations.ItemCreate` link that jumps into the underlying OpenAPI
+operation type in `schema.ts`.
+
 ## Swap in another HTTP library
 
 `createClient` accepts a custom `transport` — a single function that receives

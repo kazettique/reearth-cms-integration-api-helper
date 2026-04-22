@@ -64,7 +64,10 @@ const created = await cms.ItemCreate({
 
 Every operationId from the OpenAPI spec is a method on the client — see
 [`src/generated/operations.ts`](./src/generated/operations.ts) for the full
-list (48 operations).
+list (48 operations). Hovering `cms.ItemCreate` (or any op) in your editor
+shows the HTTP method and path, plus an `@see operations.ItemCreate` link
+that jumps into the generated schema; **Go to Definition** lands on the
+specific method in `src/generated/client.ts`.
 
 ## Layer 1 — library-agnostic request descriptors
 
@@ -316,10 +319,11 @@ and regenerates:
 
 - `src/generated/schema.ts` — types
 - `src/generated/operations.ts` — runtime operationId → `{ method, path }` map
+- `src/generated/client.ts` — per-operation `ClientMethods` interface with HTTP method + path in JSDoc
 - `src/generated/version.ts` — baked sha256 for the drift check
-- `exports/integration.postman_collection.json` — Postman Collection v2.1
+- `docs/public/integration.postman_collection.json` — Postman Collection v2.1
 
-All four are committed so consumers don't need to run codegen themselves.
+All five are committed so consumers don't need to run codegen themselves.
 The generator throws if GitHub is unreachable — run with network access.
 
 ## Scripts
@@ -368,6 +372,7 @@ import {
 } from "reearth-cms-integration-api-helper";
 import type {
   Client,
+  ClientMethods, // per-operation method surface (source of `Client`)
   ClientOptions,
   Transport,
   TransportContext,
@@ -375,6 +380,7 @@ import type {
   OperationId,
   OperationParams,
   OperationResult,
+  Prettify, // flatten intersections into a single object literal
   SpecVersionResult,
 } from "reearth-cms-integration-api-helper";
 ```

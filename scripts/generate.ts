@@ -14,6 +14,7 @@ const SPEC_URL =
 
 const SCHEMA_OUT = resolve(__dirname, "../src/generated/schema.ts");
 const OPS_OUT = resolve(__dirname, "../src/generated/operations.ts");
+const CLIENT_OUT = resolve(__dirname, "../src/generated/client.ts");
 const VERSION_OUT = resolve(__dirname, "../src/generated/version.ts");
 const POSTMAN_OUT = resolve(
   __dirname,
@@ -99,7 +100,39 @@ writeFileSync(
 );
 console.log(`wrote ${OPS_OUT} (${entries.length} operations)`);
 
-// 4. Emit the baked version identifier for the runtime drift check.
+// 4. Emit the per-operation client interface so editors can land on a specific
+//    line when the user hits "Go to Definition" on e.g. `cms.ProjectGet`.
+const clientBody = `import type { operations } from "./schema";
+import type { OperationParams, OperationResult } from "../runtime/types";
+
+// Re-export so the {@link operations.X} JSDoc links below stay resolvable
+// after dts-bundle-generator inlines this file.
+export type { operations };
+
+export interface ClientMethods {
+${entries
+  .map(
+    (e) =>
+      `  /**
+   * ${e.method} ${e.path}
+   *
+   * @see {@link operations.${e.id}}
+   */
+  ${e.id}(
+    params: OperationParams<"${e.id}">,
+    options?: { signal?: AbortSignal },
+  ): Promise<OperationResult<"${e.id}">>;`,
+  )
+  .join("\n\n")}
+}
+`;
+writeFileSync(
+  CLIENT_OUT,
+  genHeader("Per-operation typed client surface.") + clientBody,
+);
+console.log(`wrote ${CLIENT_OUT} (${entries.length} methods)`);
+
+// 5. Emit the baked version identifier for the runtime drift check.
 const generatedAt = new Date().toISOString();
 const versionBody = `export const SPEC_URL = ${JSON.stringify(SPEC_URL)};
 export const SPEC_CONTENT_HASH = ${JSON.stringify(specHash)};
@@ -111,7 +144,7 @@ writeFileSync(
 );
 console.log(`wrote ${VERSION_OUT} (sha256=${specHash.slice(0, 12)}…)`);
 
-// 5. Emit a Postman Collection v2.1 for direct import.
+// 6. Emit a Postman Collection v2.1 for direct import.
 type PostmanResult =
   | { result: true; output: Array<{ data: unknown }> }
   | { result: false; reason: string };
