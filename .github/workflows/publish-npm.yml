@@ -39,6 +39,16 @@ jobs:
         run: bun run build
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-* ]]; then
+            TAG="${VERSION#*-}"     # 0.1.0-beta.0 → beta.0
+            TAG="${TAG%%.*}"        # beta.0       → beta
+            echo "Publishing prerelease $VERSION under npm dist-tag '$TAG'"
+            npm publish --provenance --access public --tag "$TAG"
+          else
+            echo "Publishing stable $VERSION under npm dist-tag 'latest'"
+            npm publish --provenance --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
