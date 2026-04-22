@@ -32,8 +32,46 @@ if (!getResponse.ok) {
 }
 const specText = await getResponse.text();
 const specHash = createHash("sha256").update(specText, "utf8").digest("hex");
+interface SpecParameter {
+  in: "path" | "query" | "header" | "cookie";
+  name: string;
+  required?: boolean;
+}
+interface SpecRequestBody {
+  required?: boolean;
+  content?: Record<string, unknown>;
+}
+interface SpecResponse {
+  content?: Record<string, unknown>;
+}
+interface SpecOperation {
+  operationId?: string;
+  parameters?: ParamOrRef[];
+  requestBody?: SpecRequestBody;
+  responses?: Record<string, SpecResponse>;
+}
+type ParamOrRef = SpecParameter | { $ref: string };
+interface SpecPathItem {
+  parameters?: ParamOrRef[];
+  get?: SpecOperation;
+  post?: SpecOperation;
+  put?: SpecOperation;
+  patch?: SpecOperation;
+  delete?: SpecOperation;
+  options?: SpecOperation;
+  head?: SpecOperation;
+}
 const specDoc = parseYaml(specText) as {
-  paths: Record<string, Record<string, { operationId?: string } | undefined>>;
+  paths: Record<string, SpecPathItem>;
+  components?: { parameters?: Record<string, SpecParameter> };
+};
+
+const resolveParam = (p: ParamOrRef): SpecParameter | null => {
+  if ("$ref" in p) {
+    const refName = p.$ref.replace(/^#\/components\/parameters\//, "");
+    return specDoc.components?.parameters?.[refName] ?? null;
+  }
+  return p;
 };
 
 const genHeader = (title: string) => `/**
@@ -65,18 +103,51 @@ const HTTP_METHODS = [
 ] as const;
 type HttpMethod = (typeof HTTP_METHODS)[number];
 
-const entries: Array<{ id: string; method: string; path: string }> = [];
+interface OpEntry {
+  id: string;
+  method: string;
+  path: string;
+  hasPath: boolean;
+  hasQuery: boolean;
+  hasHeader: boolean;
+  hasBody: boolean;
+  bodyRequired: boolean;
+  hasJsonResponse: boolean;
+}
+const entries: OpEntry[] = [];
 for (const [pathTemplate, pathItem] of Object.entries(specDoc.paths)) {
   if (!pathItem) continue;
+  // Path-level parameters apply to every operation on this path; $refs resolved.
+  const pathLevelIn = new Set(
+    (pathItem.parameters ?? [])
+      .map(resolveParam)
+      .filter((p): p is SpecParameter => p !== null)
+      .map((p) => p.in),
+  );
+  // Any `{placeholder}` in the URL template implies `parameters.path` exists in
+  // the resolved type, regardless of how it's declared in the YAML.
+  const hasPathFromTemplate = /\{[^}]+\}/.test(pathTemplate);
   for (const method of HTTP_METHODS) {
     const op = pathItem[method as HttpMethod];
-    if (op?.operationId) {
-      entries.push({
-        id: op.operationId,
-        method: method.toUpperCase(),
-        path: pathTemplate,
-      });
+    if (!op?.operationId) continue;
+    const opIn = new Set<string>(pathLevelIn);
+    for (const p of op.parameters ?? []) {
+      const resolved = resolveParam(p);
+      if (resolved) opIn.add(resolved.in);
     }
+    const jsonBody = op.requestBody?.content?.["application/json"];
+    entries.push({
+      id: op.operationId,
+      method: method.toUpperCase(),
+      path: pathTemplate,
+      hasPath: opIn.has("path") || hasPathFromTemplate,
+      hasQuery: opIn.has("query"),
+      hasHeader: opIn.has("header"),
+      hasBody: jsonBody !== undefined,
+      bodyRequired: jsonBody !== undefined && op.requestBody?.required === true,
+      hasJsonResponse:
+        op.responses?.["200"]?.content?.["application/json"] !== undefined,
+    });
   }
 }
 entries.sort((a, b) => a.id.localeCompare(b.id));
@@ -102,8 +173,33 @@ console.log(`wrote ${OPS_OUT} (${entries.length} operations)`);
 
 // 4. Emit the per-operation client interface so editors can land on a specific
 //    line when the user hits "Go to Definition" on e.g. `cms.ProjectGet`.
+const buildParamsLiteral = (e: OpEntry): string => {
+  const fields: string[] = [];
+  if (e.hasPath) {
+    fields.push(`    path: operations["${e.id}"]["parameters"]["path"];`);
+  }
+  if (e.hasQuery) {
+    fields.push(`    query?: operations["${e.id}"]["parameters"]["query"];`);
+  }
+  if (e.hasHeader) {
+    fields.push(`    header?: operations["${e.id}"]["parameters"]["header"];`);
+  }
+  if (e.hasBody) {
+    const opt = e.bodyRequired ? "" : "?";
+    fields.push(
+      `    body${opt}: NonNullable<operations["${e.id}"]["requestBody"]>["content"]["application/json"];`,
+    );
+  }
+  if (fields.length === 0) return "{}";
+  return `{\n${fields.join("\n")}\n  }`;
+};
+
+const buildReturnType = (e: OpEntry): string =>
+  e.hasJsonResponse
+    ? `Promise<operations["${e.id}"]["responses"][200]["content"]["application/json"]>`
+    : "Promise<void>";
+
 const clientBody = `import type { operations } from "./schema";
-import type { OperationParams, OperationResult } from "../runtime/types";
 
 // Re-export so the {@link operations.X} JSDoc links below stay resolvable
 // after dts-bundle-generator inlines this file.
@@ -116,12 +212,12 @@ ${entries
       `  /**
    * ${e.method} ${e.path}
    *
-   * @see {@link operations.${e.id}}
+   * @see {@link operations.${e.id}} for the raw OpenAPI operation (response codes, schemas).
    */
   ${e.id}(
-    params: OperationParams<"${e.id}">,
+    params: ${buildParamsLiteral(e)},
     options?: { signal?: AbortSignal },
-  ): Promise<OperationResult<"${e.id}">>;`,
+  ): ${buildReturnType(e)};`,
   )
   .join("\n\n")}
 }
