@@ -17,6 +17,7 @@ export default defineConfig({
           { text: "Install", link: "/install" },
           { text: "Usage", link: "/usage" },
           { text: "Postman", link: "/postman" },
+          { text: "CDN + Types", link: "/cdn-types" },
         ],
         sidebar: [
           {
@@ -25,6 +26,7 @@ export default defineConfig({
               { text: "Install", link: "/install" },
               { text: "Basic usage", link: "/usage" },
               { text: "Postman collection", link: "/postman" },
+              { text: "CDN + Types", link: "/cdn-types" },
             ],
           },
         ],
@@ -42,6 +44,7 @@ export default defineConfig({
           { text: "インストール", link: "/ja/install" },
           { text: "使い方", link: "/ja/usage" },
           { text: "Postman", link: "/ja/postman" },
+          { text: "CDN と型", link: "/ja/cdn-types" },
         ],
         sidebar: [
           {
@@ -50,6 +53,7 @@ export default defineConfig({
               { text: "インストール", link: "/ja/install" },
               { text: "基本的な使い方", link: "/ja/usage" },
               { text: "Postman コレクション", link: "/ja/postman" },
+              { text: "CDN と型", link: "/ja/cdn-types" },
             ],
           },
         ],

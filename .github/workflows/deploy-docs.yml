@@ -36,6 +36,9 @@ jobs:
       - name: Regenerate spec artifacts
         run: bun run generate
 
+      - name: Build library (emits dist/bundled.d.ts + docs/public/types/)
+        run: bun run build
+
       - name: Build docs site
         run: bun run docs:build
 
