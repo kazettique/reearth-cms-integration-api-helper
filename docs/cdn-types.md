@@ -77,35 +77,50 @@ curl -L \
 Rename to `tsconfig.json` and the same `paths` mapping applies.
 :::
 
-### 3. Author the HTML with `// @ts-check`
+### 3. Keep the logic in a sibling `main.js`
 
 ```html
+<!-- index.html -->
 <!doctype html>
 <html>
   <body>
-    <script type="module">
-      // @ts-check
-      import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper";
-
-      const cms = createClient({
-        baseUrl: "https://cms.example.com/api",
-        token: "your-integration-token",
-      });
-
-      const { items } = await cms.ItemFilter({
-        path: { projectIdOrAlias: "my-proj", modelIdOrKey: "posts" },
-        query: { page: 1, perPage: 20 },
-      });
-
-      console.log(items);
-    </script>
+    <pre id="out">running…</pre>
+    <script type="module" src="./main.js"></script>
   </body>
 </html>
 ```
 
-Hover `createClient`, `ItemFilter`, or `items` — VS Code's built-in HTML
-language service runs TypeScript on `<script type="module">` and resolves
-everything through the local `.d.ts`. Autocomplete lists all 48 operations.
+```js
+// main.js
+// @ts-check
+import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper";
+
+const cms = createClient({
+  baseUrl: "https://cms.example.com/api",
+  token: "your-integration-token",
+});
+
+const { items } = await cms.ItemFilter({
+  path: { projectIdOrAlias: "my-proj", modelIdOrKey: "posts" },
+  query: { page: 1, perPage: 20 },
+});
+
+document.getElementById("out").textContent = JSON.stringify(items, null, 2);
+```
+
+Open `main.js` and hover `createClient` or `cms.ItemFilter` — VS Code's JS
+language service resolves the CDN URL through the local `.d.ts` via the
+`paths` mapping, so autocomplete lists all 48 operations.
+
+::: warning Why an external `main.js` and not an inline `<script>` block?
+VS Code's HTML-embedded JS language service runs a per-`<script>` TS
+project that doesn't inherit `jsconfig.json` `paths` or ambient
+`declare module` declarations, so URL imports inside an inline
+`<script type="module">` resolve to `any`. Keeping the code in `main.js`
+and loading it via `<script type="module" src="./main.js">` sidesteps
+the limitation — the JS language service runs with the full `jsconfig`
+on standalone files.
+:::
 
 ## Monaco (web editor)
 

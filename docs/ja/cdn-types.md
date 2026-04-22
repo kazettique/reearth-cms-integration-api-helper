@@ -78,36 +78,51 @@ curl -L \
 `tsconfig.json` にリネームすればそのまま同じ `paths` が機能します。
 :::
 
-### 3. `// @ts-check` を付けて HTML を書く
+### 3. 処理は隣接する `main.js` に書く
 
 ```html
+<!-- index.html -->
 <!doctype html>
 <html>
   <body>
-    <script type="module">
-      // @ts-check
-      import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper";
-
-      const cms = createClient({
-        baseUrl: "https://cms.example.com/api",
-        token: "your-integration-token",
-      });
-
-      const { items } = await cms.ItemFilter({
-        path: { projectIdOrAlias: "my-proj", modelIdOrKey: "posts" },
-        query: { page: 1, perPage: 20 },
-      });
-
-      console.log(items);
-    </script>
+    <pre id="out">running…</pre>
+    <script type="module" src="./main.js"></script>
   </body>
 </html>
 ```
 
-`createClient`、`ItemFilter`、`items` にホバーしてみてください。VS Code
-標準の HTML 言語サービスが `<script type="module">` 配下で TypeScript を
-動かし、ローカルの `.d.ts` から型を解決します。補完には 48 個すべての
-operation が表示されます。
+```js
+// main.js
+// @ts-check
+import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper";
+
+const cms = createClient({
+  baseUrl: "https://cms.example.com/api",
+  token: "your-integration-token",
+});
+
+const { items } = await cms.ItemFilter({
+  path: { projectIdOrAlias: "my-proj", modelIdOrKey: "posts" },
+  query: { page: 1, perPage: 20 },
+});
+
+document.getElementById("out").textContent = JSON.stringify(items, null, 2);
+```
+
+`main.js` を開いて `createClient` や `cms.ItemFilter` にホバーしてみて
+ください。VS Code の JS 言語サービスが `paths` マッピングを介して CDN URL
+を ローカルの `.d.ts` に解決するため、補完には 48 個すべての operation が
+表示されます。
+
+::: warning なぜインラインの `<script>` ではなく外部 `main.js` なのか
+VS Code の HTML 内蔵 JS 言語サービスは `<script>` ブロックごとに独立した
+簡易 TS プロジェクトを動かすため、`jsconfig.json` の `paths` や ambient
+な `declare module` 宣言を継承しません。結果として、インラインの
+`<script type="module">` 内で URL インポートすると型は `any` になります。
+コードを `main.js` に分け、`<script type="module" src="./main.js">` で
+読み込むと、JS 言語サービスが `jsconfig` をそのまま適用できるため、この
+制限を回避できます。
+:::
 
 ## Monaco (Web エディタ)
 
