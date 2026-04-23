@@ -326,6 +326,53 @@ and regenerates:
 All five are committed so consumers don't need to run codegen themselves.
 The generator throws if GitHub is unreachable — run with network access.
 
+## Release process
+
+Releases are fully automated by GitHub Actions. As a maintainer you only ever
+merge PRs — version bumps, tags, npm publish, and docs deploy all happen for
+you.
+
+### Cutting a release manually
+
+1. Go to **Actions → Release → Run workflow** on GitHub.
+2. Pick a semver `bump` (`patch` / `minor` / `major`), or set an explicit
+   `version` (e.g. `1.2.3`, or `1.2.3-beta.0` for a prerelease).
+3. The workflow runs against `develop`, regenerates spec artifacts, bumps
+   `package.json`, commits to a new `release/v<version>` branch, and opens
+   **two PRs**: one into `develop`, one into `main`. Both are labeled
+   `release`.
+4. Review and merge **both** PRs (order doesn't matter). Merging the `main`
+   PR is what triggers publishing.
+
+### Automatic releases on spec drift
+
+A scheduled job runs `release.yml` daily at 06:00 UTC:
+
+- It regenerates from upstream `integration.yml`.
+- If `src/generated/` is unchanged, it exits silently.
+- If drift is detected, it cuts a **patch** release the same way manual
+  dispatch does, tagging the PRs with `auto-generated,spec-drift`. Bump the
+  version manually (via another dispatch) if the drift is actually breaking.
+
+### What happens after the `main` PR merges
+
+1. **`tag-on-main.yml`** sees a `chore(release): v…` commit on `main`, reads
+   the version from `package.json`, and pushes tag `v<version>`.
+2. The tag push fans out to two workflows:
+   - **`publish-npm.yml`** — reinstalls, regenerates, type-checks, builds,
+     then `npm publish --provenance`. Stable versions land under the `latest`
+     dist-tag; prereleases (e.g. `1.2.3-beta.0`) land under a dist-tag derived
+     from the prerelease label (`beta`).
+   - **`deploy-docs.yml`** — builds the VitePress site and deploys it to
+     GitHub Pages.
+
+### Prerequisites (one-time, already configured)
+
+- `NPM_TOKEN` secret with publish rights for `reearth-cms-integration-api-helper`.
+- GitHub Pages set to "GitHub Actions" as the source.
+- Default `GITHUB_TOKEN` permissions allow PR creation, tag push, and Pages
+  deploy (granted per-workflow).
+
 ## Scripts
 
 | script          | description                                                                   |

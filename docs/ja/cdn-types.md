@@ -1,7 +1,6 @@
 # プレーン HTML から利用する (CDN + 型)
 
-`<script type="module">` から CDN 経由で読み込みつつ、**VS Code** と
-**Monaco** で型ヒントを得る方法です。バンドラーも `npm install` も不要です。
+`<script type="module">` から CDN 経由で読み込みつつ、**VS Code** と **Monaco** で型ヒントを得る方法です。バンドラーも `npm install` も不要です。
 
 ## 素の CDN インポートでは型が効かない理由
 
@@ -13,24 +12,18 @@
 </script>
 ```
 
-ただしエディタにとって URL インポートは単なる文字列です。`esm.sh` は
-`X-TypeScript-Types` ヘッダを返し、**Deno** はこれに従って型を解決しますが、
-VS Code と Monaco は従いません。このページでは、このサイトが安定した URL で
-公開しているフラットな単一ファイル `.d.ts` をエディタに参照させる方法を
-解説します。
+ただしエディタにとって URL インポートは単なる文字列です。`esm.sh` は `X-TypeScript-Types` ヘッダを返し、**Deno** はこれに従って型を解決しますが、VS Code と Monaco は従いません。このページでは、このサイトが安定した URL で公開しているフラットな単一ファイル `.d.ts` をエディタに参照させる方法を解説します。
 
 ## `.d.ts` の配置場所
 
-| 用途 | URL |
-|---|---|
-| 最新版 (`main` に追随) | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/reearth-cms-integration-api-helper.d.ts` |
+| 用途                                    | URL                                                                                                                    |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 最新版 (`main` に追随)                  | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/reearth-cms-integration-api-helper.d.ts`        |
 | 直近リリース (最新公開バージョンに固定) | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/reearth-cms-integration-api-helper-vX.Y.Z.d.ts` |
-| 過去の任意バージョン (unpkg 経由) | `https://unpkg.com/reearth-cms-integration-api-helper@X.Y.Z/dist/bundled.d.ts` |
-| マニフェスト (バージョンメタデータ) | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/manifest.json` |
+| 過去の任意バージョン (unpkg 経由)       | `https://unpkg.com/reearth-cms-integration-api-helper@X.Y.Z/dist/bundled.d.ts`                                         |
+| マニフェスト (バージョンメタデータ)     | `https://kazettique.github.io/reearth-cms-integration-api-helper/types/manifest.json`                                  |
 
-長期的にバージョンを固定するなら **unpkg** を推奨します。公開済みの
-全バージョンが自動でミラーされます。GH Pages のバージョン付き URL は
-デプロイごとに置き換わります。
+長期的にバージョンを固定するなら **unpkg** を推奨します。公開済みの全バージョンが自動でミラーされます。GH Pages のバージョン付き URL はデプロイごとに置き換わります。
 
 ## VS Code — ローカルの HTML
 
@@ -109,25 +102,15 @@ const { items } = await cms.ItemFilter({
 document.getElementById("out").textContent = JSON.stringify(items, null, 2);
 ```
 
-`main.js` を開いて `createClient` や `cms.ItemFilter` にホバーしてみて
-ください。VS Code の JS 言語サービスが `paths` マッピングを介して CDN URL
-を ローカルの `.d.ts` に解決するため、補完には 48 個すべての operation が
-表示されます。
+`main.js` を開いて `createClient` や `cms.ItemFilter` にホバーしてみてください。VS Code の JS 言語サービスが `paths` マッピングを介して CDN URL を ローカルの `.d.ts` に解決するため、補完には 48 個すべての operation が表示されます。
 
 ::: warning なぜインラインの `<script>` ではなく外部 `main.js` なのか
-VS Code の HTML 内蔵 JS 言語サービスは `<script>` ブロックごとに独立した
-簡易 TS プロジェクトを動かすため、`jsconfig.json` の `paths` や ambient
-な `declare module` 宣言を継承しません。結果として、インラインの
-`<script type="module">` 内で URL インポートすると型は `any` になります。
-コードを `main.js` に分け、`<script type="module" src="./main.js">` で
-読み込むと、JS 言語サービスが `jsconfig` をそのまま適用できるため、この
-制限を回避できます。
+VS Code の HTML 内蔵 JS 言語サービスは `<script>` ブロックごとに独立した簡易 TS プロジェクトを動かすため、`jsconfig.json` の `paths` や ambient な `declare module` 宣言を継承しません。結果として、インラインの `<script type="module">` 内で URL インポートすると型は `any` になります。コードを `main.js` に分け、`<script type="module" src="./main.js">` で読み込むと、JS 言語サービスが `jsconfig` をそのまま適用できるため、この制限を回避できます。
 :::
 
 ## Monaco (Web エディタ)
 
-エディタ初期化時にバンドル済み `.d.ts` を一度 fetch し、extra lib と
-CDN URL のエイリアスを登録します。
+エディタ初期化時にバンドル済み `.d.ts` を一度 fetch し、extra lib と CDN URL のエイリアスを登録します。
 
 ```ts
 import * as monaco from "monaco-editor";
@@ -165,17 +148,11 @@ monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
 });
 ```
 
-Monaco の TypeScript **Worker** を通常の手順(`MonacoEnvironment.getWorker`)
-で登録してください。Worker が無いと `addExtraLib` は何にも効きません。
-標準的な手順は
-[Monaco integration guide](https://github.com/microsoft/monaco-editor/tree/main/docs)
-を参照してください。
+Monaco の TypeScript **Worker** を通常の手順(`MonacoEnvironment.getWorker`)で登録してください。Worker が無いと `addExtraLib` は何にも効きません。標準的な手順は [Monaco integration guide](https://github.com/microsoft/monaco-editor/tree/main/docs) を参照してください。
 
 ## `manifest.json`
 
-現在のバージョンをプログラムから解決したい場合(例: Web エディタの
-ステータスバーに "pinned to vX.Y.Z" と表示するなど)、マニフェストを
-取得します:
+現在のバージョンをプログラムから解決したい場合(例: Web エディタのステータスバーに "pinned to vX.Y.Z" と表示するなど)、マニフェストを取得します:
 
 ```ts
 const manifest = await fetch(
@@ -187,14 +164,6 @@ const manifest = await fetch(
 
 ## トラブルシューティング
 
-- **VS Code で型が出ない.** `jsconfig.json`(または `tsconfig.json`)が
-  VS Code がワークスペースとして開いているルートフォルダに置かれていることを
-  確認してください。サブフォルダに埋もれていると機能しません。作成後は
-  VS Code ウィンドウを再読み込みしてください。
-- **Monaco で `ItemFilter` が `any` として扱われる.** TypeScript Worker が
-  登録されていません。`MonacoEnvironment.getWorker` が `typescript` /
-  `javascript` 言語のモデルに対して TS Worker を返していることを確認して
-  ください。
-- **型が古く感じる.** GH Pages の最新 `.d.ts` はタグ付きリリースごとに
-  更新されます。さらに最新が欲しい場合はリポジトリの `dist/` に出力される
-  ブランチ追随バンドルを参照してください。
+- **VS Code で型が出ない.** `jsconfig.json`(または `tsconfig.json`)が VS Code がワークスペースとして開いているルートフォルダに置かれていることを確認してください。サブフォルダに埋もれていると機能しません。作成後は VS Code ウィンドウを再読み込みしてください。
+- **Monaco で `ItemFilter` が `any` として扱われる.** TypeScript Worker が登録されていません。`MonacoEnvironment.getWorker` が `typescript` / `javascript` 言語のモデルに対して TS Worker を返していることを確認してください。
+- **型が古く感じる.** GH Pages の最新 `.d.ts` はタグ付きリリースごとに更新されます。さらに最新が欲しい場合はリポジトリの `dist/` に出力されるブランチ追随バンドルを参照してください。

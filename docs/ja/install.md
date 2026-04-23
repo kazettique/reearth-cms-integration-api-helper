@@ -18,14 +18,11 @@ npm install reearth-cms-integration-api-helper
 
 :::
 
-動作環境: Node **20.11 以上**、Bun、Deno、もしくは `fetch` と
-`URLSearchParams` をサポートするモダンブラウザ / エッジランタイム。
-このパッケージは **ESM 専用** (`"type": "module"`) です。
+動作環境: Node **20.11 以上**、Bun、Deno、もしくは `fetch` と `URLSearchParams` をサポートするモダンブラウザ / エッジランタイム。このパッケージは **ESM 専用** (`"type": "module"`) です。
 
 ## CDN から
 
-ブラウザやプロトタイピング用途では [esm.sh](https://esm.sh) から直接
-インポートできます:
+ブラウザやプロトタイピング用途では [esm.sh](https://esm.sh) から直接インポートできます:
 
 ```html
 <script type="module">
@@ -48,11 +45,6 @@ npm install reearth-cms-integration-api-helper
 ```js
 import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper@0.1.0";
 ```
-
-::: info まだ公開されていません
-このパッケージは npm レジストリにはまだ公開されていません。上記のコマンドは
-最終的なインストール方法で、最初のリリースが作成され次第そのまま利用できます。
-:::
 
 ## 次のステップ
 

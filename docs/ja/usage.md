@@ -32,22 +32,13 @@ const created = await cms.ItemCreate({
 });
 ```
 
-OpenAPI 仕様に定義されたすべての `operationId`(全 48 種)がクライアントの
-メソッドとして利用できます。`cms.` と入力すればエディタの補完に一覧が表示
-されます。
+OpenAPI 仕様に定義されたすべての `operationId`(全 48 種)がクライアントのメソッドとして利用できます。`cms.` と入力すればエディタの補完に一覧が表示されます。
 
-生成された `ClientMethods` インターフェースには各メソッドが個別に宣言されて
-いるため、`cms.ItemCreate` などにホバーすると HTTP メソッドとパスが JSDoc で
-表示され、**F12 / 定義へ移動** でそのメソッドの行に直接ジャンプできます。
-JSDoc 内の `@see operations.ItemCreate` リンクをクリックすると、`schema.ts`
-にある OpenAPI の operation 型定義に移動します。
+生成された `ClientMethods` インターフェースには各メソッドが個別に宣言されているため、`cms.ItemCreate` などにホバーすると HTTP メソッドとパスが JSDoc で表示され、**F12 / 定義へ移動** でそのメソッドの行に直接ジャンプできます。JSDoc 内の `@see operations.ItemCreate` リンクをクリックすると、`schema.ts` にある OpenAPI の operation 型定義に移動します。
 
 ## HTTP ライブラリを差し替える
 
-`createClient` は `transport` オプションを受け取ります。リクエスト
-ディスクリプタを受け取り、パース済みデータを返す単一の関数です。型の
-快適さはそのままに、既存の HTTP スタック(リトライやインターセプターなど)を
-活かせます。
+`createClient` は `transport` オプションを受け取ります。リクエストディスクリプタを受け取り、パース済みデータを返す単一の関数です。型の快適さはそのままに、既存の HTTP スタック(リトライやインターセプターなど)を活かせます。
 
 ```ts
 import axios from "axios";
@@ -68,8 +59,7 @@ const axiosTransport: Transport = async ({ baseUrl, descriptor, signal }) => {
 const cms = createClient({ baseUrl, token, transport: axiosTransport });
 ```
 
-**ofetch**、**ky**、**@tanstack/react-query** 用のアダプタはパッケージの
-README を参照してください。いずれも 3〜5 行で実装できます。
+**ofetch**、**ky**、**@tanstack/react-query** 用のアダプタはパッケージの README を参照してください。いずれも 3〜5 行で実装できます。
 
 ## ライブラリ非依存のディスクリプタ
 
@@ -94,9 +84,7 @@ await fetch(baseUrl + req.url, {
 
 ## JavaScript から使う
 
-TypeScript は必須ではありません。`.js` / `.mjs` ファイルの先頭に
-`// @ts-check` を記述すると、同梱の `.d.ts` によってエディタが型チェック
-してくれます:
+TypeScript は必須ではありません。`.js` / `.mjs` ファイルの先頭に `// @ts-check` を記述すると、同梱の `.d.ts` によってエディタが型チェックしてくれます:
 
 ```js
 // @ts-check
