@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@reearth/cms-integration-interface",
+      "name": "reearth-cms-integration-api-helper",
       "devDependencies": {
         "@types/bun": "1.3.13",
         "dts-bundle-generator": "9.5.1",
