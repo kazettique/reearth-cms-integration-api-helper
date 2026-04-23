@@ -48,11 +48,6 @@ To pin to a specific version:
 import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper@0.1.0";
 ```
 
-::: info Not published yet
-The package is not yet on the public npm registry. These commands are the final
-install surface — they'll work as soon as the first release is tagged.
-:::
-
 ## Next
 
 - [Basic usage →](./usage)
