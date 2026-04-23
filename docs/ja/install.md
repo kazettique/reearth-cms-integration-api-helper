@@ -49,11 +49,6 @@ npm install reearth-cms-integration-api-helper
 import { createClient } from "https://esm.sh/reearth-cms-integration-api-helper@0.1.0";
 ```
 
-::: info まだ公開されていません
-このパッケージは npm レジストリにはまだ公開されていません。上記のコマンドは
-最終的なインストール方法で、最初のリリースが作成され次第そのまま利用できます。
-:::
-
 ## 次のステップ
 
 - [基本的な使い方 →](./usage)
