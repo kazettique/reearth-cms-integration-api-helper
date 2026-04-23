@@ -9,4 +9,4 @@ export const SPEC_URL =
   "https://raw.githubusercontent.com/reearth/reearth-cms/main/server/schemas/integration/integration.yml";
 export const SPEC_CONTENT_HASH =
   "d9ad15577e5ae2f29e38c33b162b4e2dbce6bb72dc675cb4476607e4a5078f3e";
-export const GENERATED_AT = "2026-04-22T07:27:12.536Z";
+export const GENERATED_AT = "2026-04-23T09:28:44.460Z";
