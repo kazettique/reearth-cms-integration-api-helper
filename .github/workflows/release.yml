@@ -74,6 +74,7 @@ jobs:
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
             NEW_VERSION="${{ github.event.inputs.version }}"
+            NEW_VERSION="${NEW_VERSION#v}"
             npm version "$NEW_VERSION" --no-git-tag-version --allow-same-version
           else
             if [ "${{ github.event_name }}" = "schedule" ]; then
@@ -91,6 +92,14 @@ jobs:
         run: |
           BRANCH="${{ steps.bump.outputs.branch }}"
           VERSION="${{ steps.bump.outputs.version }}"
+
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            echo "::error::Remote branch $BRANCH already exists."
+            echo "A previous release attempt for v$VERSION is still on the remote."
+            echo "Delete it (git push origin --delete $BRANCH) or dispatch with a new version, then re-run."
+            exit 1
+          fi
+
           git checkout -b "$BRANCH"
           git add -A
 
