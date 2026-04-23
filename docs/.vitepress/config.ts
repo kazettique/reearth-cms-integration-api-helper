@@ -8,7 +8,6 @@ export default withMermaid(
     base: "/reearth-cms-integration-api-helper/",
     cleanUrls: true,
     lastUpdated: true,
-    head: [["link", { rel: "icon", href: "/favicon.ico", type: "image/x-icon" }]],
 
     locales: {
       root: {
@@ -71,7 +70,6 @@ export default withMermaid(
     },
 
     themeConfig: {
-      logo: "/favicon.ico",
       socialLinks: [
         {
           icon: "github",
