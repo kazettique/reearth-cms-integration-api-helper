@@ -112,6 +112,18 @@ jobs:
           git commit -m "$MSG"
           git push origin "$BRANCH"
 
+      - name: Ensure PR labels exist
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.drift.outputs.drift == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ensure_label() {
+            gh label create "$1" --color "$2" --description "$3" 2>/dev/null || true
+          }
+          ensure_label release        "0E8A16" "Automated release PR"
+          ensure_label auto-generated "C5DEF5" "Created by CI automation"
+          ensure_label spec-drift     "FBCA04" "Triggered by upstream spec drift"
+
       - name: Open PRs to develop and main
         if: ${{ github.event_name == 'workflow_dispatch' || steps.drift.outputs.drift == 'true' }}
         env:
